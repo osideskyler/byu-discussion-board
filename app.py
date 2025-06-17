@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from database import get_all_posts, add_post, search_posts, upvote_post, downvote_post, toggle_post_pin, toggle_post_resolved
+from database import get_all_posts, add_post, search_posts, upvote_post, downvote_post, toggle_post_pin, toggle_post_resolved, delete_post
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -116,6 +116,12 @@ def pin_route(post_id):
 def resolve_route(post_id):
     new_status = toggle_post_resolved(post_id)
     return jsonify({'status': 'success', 'is_resolved': new_status})
+
+@app.route('/delete/<int:post_id>', methods=['POST'])
+def delete_route(post_id):
+    delete_post(post_id)
+    # Note: In a real app, add a confirmation step ("Are you sure?").
+    return jsonify({'status': 'success', 'message': 'Post deleted'})
 
 if __name__ == '__main__':
     app.run(debug=True)

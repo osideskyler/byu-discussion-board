@@ -113,3 +113,10 @@ def toggle_post_resolved(post_id):
     new_status = conn.execute('SELECT is_resolved FROM posts WHERE id = ?', (post_id,)).fetchone()
     conn.close()
     return new_status['is_resolved']
+
+def delete_post(post_id):
+    """Permanently deletes a post from the database."""
+    conn = get_db_connection()
+    conn.execute('DELETE FROM posts WHERE id = ?', (post_id,))
+    conn.commit()
+    conn.close()

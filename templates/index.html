@@ -26,11 +26,12 @@
         <!-- NEW ADMIN BUTTONS -->
         <div>
             <button class="btn btn-sm btn-outline-info admin-btn" data-post-id="{{ post['id'] }}" data-action="pin">
-                Pin
+                📌
             </button>
             <button class="btn btn-sm btn-outline-success admin-btn" data-post-id="{{ post['id'] }}" data-action="resolve">
                 Resolved
             </button>
+            <button class="btn btn-sm btn-outline-danger admin-btn" data-post-id="{{ post['id'] }}" data-action="delete">🗑️</button>
         </div>
     </div>
 
@@ -108,6 +109,9 @@
                                 location.reload();
                             } else if (action === 'resolve') {
                                 cardElement.classList.toggle('resolved-card', data.is_resolved);
+                            } else if (action === 'delete') {
+                            // Smoothly remove the card from the page without a reload
+                                cardElement.remove();
                             }
                         }
                     });
