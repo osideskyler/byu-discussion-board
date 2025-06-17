@@ -49,9 +49,10 @@ def add_sample_data():
     conn.close()
 
 def get_all_posts():
-    """Fetches all posts from the database."""
+    """Fetches all posts, with pinned posts appearing first."""
     conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM posts ORDER BY created_at DESC').fetchall()
+    # NEW: Order by is_pinned DESC first, then by creation date
+    posts = conn.execute('SELECT * FROM posts ORDER BY is_pinned DESC, created_at DESC').fetchall()
     conn.close()
     return posts
 
@@ -63,14 +64,12 @@ def add_post(title, question_body, ai_response, topic):
     conn.close()
 
 def search_posts(query):
-    """
-    Searches for posts where the title or body contains the query string.
-    """
+    """Searches for posts, ensuring pinned results are first."""
     conn = get_db_connection()
-    # The '%' are wildcards, so it finds the query anywhere in the text
     search_term = f"%{query}%"
+    # NEW: Order by is_pinned DESC first, then by creation date
     posts = conn.execute(
-        'SELECT * FROM posts WHERE title LIKE ? OR question_body LIKE ? ORDER BY created_at DESC',
+        'SELECT * FROM posts WHERE title LIKE ? OR question_body LIKE ? ORDER BY is_pinned DESC, created_at DESC',
         (search_term, search_term)
     ).fetchall()
     conn.close()
@@ -95,3 +94,22 @@ def downvote_post(post_id):
     post = conn.execute('SELECT upvotes, downvotes FROM posts WHERE id = ?', (post_id,)).fetchone()
     conn.close()
     return post
+
+def toggle_post_pin(post_id):
+    """Toggles the is_pinned status of a post."""
+    conn = get_db_connection()
+    # NOT is_pinned flips the value (0 to 1, 1 to 0)
+    conn.execute('UPDATE posts SET is_pinned = NOT is_pinned WHERE id = ?', (post_id,))
+    conn.commit()
+    new_status = conn.execute('SELECT is_pinned FROM posts WHERE id = ?', (post_id,)).fetchone()
+    conn.close()
+    return new_status['is_pinned']
+
+def toggle_post_resolved(post_id):
+    """Toggles the is_resolved status of a post."""
+    conn = get_db_connection()
+    conn.execute('UPDATE posts SET is_resolved = NOT is_resolved WHERE id = ?', (post_id,))
+    conn.commit()
+    new_status = conn.execute('SELECT is_resolved FROM posts WHERE id = ?', (post_id,)).fetchone()
+    conn.close()
+    return new_status['is_resolved']

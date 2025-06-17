@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
-from database import get_all_posts, add_post, search_posts
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+from database import get_all_posts, add_post, search_posts, upvote_post, downvote_post, toggle_post_pin, toggle_post_resolved
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -95,6 +95,27 @@ def search():
 # But for now, add this to app.py
 app.add_url_rule('/add_post', 'add_post', add_post_route, methods=['POST'])
 
+# NEW VOTE ROUTES
+@app.route('/vote/up/<int:post_id>', methods=['POST'])
+def upvote_route(post_id):
+    new_counts = upvote_post(post_id)
+    # Return the new counts as JSON so our JavaScript can read it
+    return jsonify({'upvotes': new_counts['upvotes'], 'downvotes': new_counts['downvotes'], 'status': 'success'})
+
+@app.route('/vote/down/<int:post_id>', methods=['POST'])
+def downvote_route(post_id):
+    new_counts = downvote_post(post_id)
+    return jsonify({'upvotes': new_counts['upvotes'], 'downvotes': new_counts['downvotes'], 'status': 'success'})
+
+@app.route('/pin/<int:post_id>', methods=['POST'])
+def pin_route(post_id):
+    new_status = toggle_post_pin(post_id)
+    return jsonify({'status': 'success', 'is_pinned': new_status})
+
+@app.route('/resolve/<int:post_id>', methods=['POST'])
+def resolve_route(post_id):
+    new_status = toggle_post_resolved(post_id)
+    return jsonify({'status': 'success', 'is_resolved': new_status})
 
 if __name__ == '__main__':
     app.run(debug=True)

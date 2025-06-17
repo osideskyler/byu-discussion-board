@@ -16,13 +16,22 @@
 </form>
 <!-- This is where we loop through the 'posts' data from app.py -->
 {% for post in posts %}
-<div class="card mb-3 post-card" style="cursor: pointer;"
+<div class="card mb-3 post-card {% if post['is_resolved'] %}resolved-card{% endif %}" style="cursor: pointer;"
      data-title="{{ post['title'] }}"
      data-full-question="{{ post['question_body'] }}"
      data-full-answer="{{ post['ai_response'] }}">
 
-    <div class="card-header">
-        <strong>{{ post['title'] }}</strong>
+     <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>{{ post['title'] }} {% if post['is_pinned'] %}📌{% endif %}</strong>
+        <!-- NEW ADMIN BUTTONS -->
+        <div>
+            <button class="btn btn-sm btn-outline-info admin-btn" data-post-id="{{ post['id'] }}" data-action="pin">
+                Pin
+            </button>
+            <button class="btn btn-sm btn-outline-success admin-btn" data-post-id="{{ post['id'] }}" data-action="resolve">
+                Resolved
+            </button>
+        </div>
     </div>
 
     <div class="card-body">
@@ -33,41 +42,79 @@
     <div class="card-footer text-muted d-flex justify-content-between">
         <span>Topic: {{ post['topic'] }}</span>
         <div>
-            <!-- These buttons are for looks right now -->
-            <button class="btn btn-sm btn-outline-success">▲ Upvote ({{ post['upvotes'] }})</button>
-            <button class="btn btn-sm btn-outline-danger">▼ Downvote ({{ post['downvotes'] }})</button>
+            <!-- Note the new 'vote-btn' class and data-post-id attribute -->
+            <button class="btn btn-sm btn-outline-success vote-btn" data-post-id="{{ post['id'] }}" data-vote-type="up">
+                ▲ Upvote (<span id="upvotes-{{ post['id'] }}">{{ post['upvotes'] }}</span>)
+            </button>
+            <button class="btn btn-sm btn-outline-danger vote-btn" data-post-id="{{ post['id'] }}" data-vote-type="down">
+                ▼ Downvote (<span id="downvotes-{{ post['id'] }}">{{ post['downvotes'] }}</span>)
+            </button>
         </div>
     </div>
 </div>
 {% endfor %}
 
 <!-- This JavaScript makes the right sidebar appear when you click a post -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const postCards = document.querySelectorAll('.post-card');
-    const rightSidebar = document.getElementById('right-sidebar-details');
-    const detailsTitle = document.getElementById('details-title');
-    const detailsQuestion = document.getElementById('details-question');
-    const detailsAnswer = document.getElementById('details-answer');
-
-    postCards.forEach(card => {
-        card.addEventListener('click', function() {
-            // Get the data stored on the card element you clicked
-            const title = this.dataset.title;
-            const question = this.dataset.fullQuestion;
-            const answer = this.dataset.fullAnswer;
-
-            // Put that data into the right sidebar's elements
-            detailsTitle.innerText = title;
-            detailsQuestion.innerText = question;
-            detailsAnswer.innerText = answer;
-
-            // Make the sidebar visible by removing the 'd-none' (display: none) class
-            rightSidebar.classList.remove('d-none');
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Sidebar Logic ---
+        document.querySelectorAll('.post-card').forEach(card => {
+            card.addEventListener('click', function(event) {
+                // Stop if a button was clicked
+                if (event.target.closest('button')) {
+                    return;
+                }
+                const detailsTitle = document.getElementById('details-title');
+                const detailsQuestion = document.getElementById('details-question');
+                const detailsAnswer = document.getElementById('details-answer');
+    
+                detailsTitle.innerText = this.dataset.title;
+                detailsQuestion.innerText = this.dataset.fullQuestion;
+                detailsAnswer.innerText = this.dataset.fullAnswer;
+                document.getElementById('right-sidebar-details').classList.remove('d-none');
+            });
+        });
+    
+        // --- Voting Logic ---
+        document.querySelectorAll('.vote-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const postId = this.dataset.postId;
+                const voteType = this.dataset.voteType;
+                fetch(`/vote/${voteType}/${postId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            document.getElementById(`upvotes-${postId}`).innerText = data.upvotes;
+                            document.getElementById(`downvotes-${postId}`).innerText = data.downvotes;
+                        }
+                    });
+            });
+        });
+    
+        // --- NEW ADMIN LOGIC ---
+        document.querySelectorAll('.admin-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const postId = this.dataset.postId;
+                const action = this.dataset.action;
+                const cardElement = this.closest('.post-card');
+    
+                fetch(`/${action}/${postId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            if (action === 'pin') {
+                                location.reload();
+                            } else if (action === 'resolve') {
+                                cardElement.classList.toggle('resolved-card', data.is_resolved);
+                            }
+                        }
+                    });
+            });
         });
     });
-});
-</script>
+    </script>
 
 <!-- New Post Modal -->
 <div class="modal fade" id="newPostModal" tabindex="-1" aria-labelledby="newPostModalLabel" aria-hidden="true">

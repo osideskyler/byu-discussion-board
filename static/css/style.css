@@ -1,0 +1,4 @@
+.resolved-card {
+    border-left: 5px solid #28a745; /* Bootstrap's success green */
+    background-color: #f0fff4; /* A very light green (honeydew) */
+}
