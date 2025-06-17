@@ -71,7 +71,19 @@
     
                 detailsTitle.innerText = this.dataset.title;
                 detailsQuestion.innerText = this.dataset.fullQuestion;
-                detailsAnswer.innerText = this.dataset.fullAnswer;
+
+                // 1. Convert the raw Markdown 'answer' string to an HTML string
+                const dirtyHtml = marked.parse(this.dataset.fullAnswer);
+
+                // 2. Sanitize the HTML string to prevent XSS attacks
+                const cleanHtml = DOMPurify.sanitize(dirtyHtml);
+
+                // 3. Set the sidebar's inner HTML to the clean, formatted HTML
+                detailsAnswer.innerHTML = cleanHtml;
+
+                // 4. Tell highlight.js to find and style any new <code> blocks we just added
+             //   hljs.highlightAll();
+
                 document.getElementById('right-sidebar-details').classList.remove('d-none');
             });
         });

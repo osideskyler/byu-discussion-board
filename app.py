@@ -55,6 +55,7 @@ def add_post_route():
         3.  If code is involved, provide a corrected R code snippet inside a markdown block (```r ... ```).
         4.  Explain *why* the correction works.
 
+        Format the response in markdown to improve readability.
         Here is the student's question:
         ---
         Title: {title}
