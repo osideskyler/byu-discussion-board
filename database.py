@@ -120,3 +120,14 @@ def delete_post(post_id):
     conn.execute('DELETE FROM posts WHERE id = ?', (post_id,))
     conn.commit()
     conn.close()
+
+def get_posts_by_topic(topic_name):
+    """Fetches all posts for a specific topic, with pinned posts first."""
+    conn = get_db_connection()
+    # This query finds posts by topic AND keeps the correct sorting
+    posts = conn.execute(
+        'SELECT * FROM posts WHERE topic = ? ORDER BY is_pinned DESC, created_at DESC',
+        (topic_name,)
+    ).fetchall()
+    conn.close()
+    return posts

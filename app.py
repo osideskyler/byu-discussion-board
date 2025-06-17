@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from database import get_all_posts, add_post, search_posts, upvote_post, downvote_post, toggle_post_pin, toggle_post_resolved, delete_post
+from database import get_all_posts, add_post, search_posts, upvote_post, downvote_post, toggle_post_pin, toggle_post_resolved, delete_post, get_posts_by_topic
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -23,9 +23,15 @@ except Exception as e:
 @app.route('/')
 def index():
     posts = get_all_posts()
-    return render_template('index.html', posts=posts)
+    # We pass 'Home' to identify the active link in the template
+    return render_template('index.html', posts=posts, current_topic='Home')
 
-# THIS IS THE ROUTE THAT WAS MISSING
+@app.route('/topic/<string:topic_name>')
+def topic_view(topic_name):
+    posts = get_posts_by_topic(topic_name)
+    # Pass the topic_name to highlight the correct link
+    return render_template('index.html', posts=posts, current_topic=topic_name)
+
 @app.route('/add_post', methods=['POST'])
 def add_post_route():
     # 1. Get data from the form

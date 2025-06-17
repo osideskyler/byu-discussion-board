@@ -20,10 +20,26 @@
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Home</a></li>
-            <li><a href="#" class="nav-link text-white">Topics</a></li>
-            <li><a href="#" class="nav-link text-white">Lectures</a></li>
-            <li><a href="#" class="nav-link text-white">Projects</a></li>
+            <li class="nav-item">
+                <a href="{{ url_for('index') }}" class="nav-link {% if current_topic == 'Home' %}active{% else %}text-white{% endif %}">
+                    Home
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('topic_view', topic_name='General') }}" class="nav-link {% if current_topic == 'General' %}active{% else %}text-white{% endif %}">
+                    General
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('topic_view', topic_name='Lectures') }}" class="nav-link {% if current_topic == 'Lectures' %}active{% else %}text-white{% endif %}">
+                    Lectures
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('topic_view', topic_name='Projects') }}" class="nav-link {% if current_topic == 'Projects' %}active{% else %}text-white{% endif %}">
+                    Projects
+                </a>
+            </li>
         </ul>
     </nav>
 
