@@ -13,7 +13,6 @@ This project is a fully functional web application designed to serve as an AI-po
 *   **Rich Content Display:** AI responses are rendered from Markdown to formatted HTML, including syntax highlighting for R code blocks, making answers easy to read and understand.
 *   **Dynamic & Responsive UI:**
     *   A modern three-column layout with a fixed navigation sidebar and independently scrollable content and details columns.
-    *   A two-column tile view for posts that responsively collapses to a single column on narrower screens.
 *   **Topic-Based Navigation:** Users can filter the post list by topic ("General", "Lectures", "Projects"). The active topic is highlighted, and the view header updates dynamically to provide user context.
 *   **Full-Text Search:** A search bar allows users to filter posts by keywords in the title or question body.
 *   **Comprehensive Admin Controls:**
