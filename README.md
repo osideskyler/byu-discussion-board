@@ -75,7 +75,7 @@ To run this project locally, please follow these steps.
     GEMINI_API_KEY='YOUR_API_KEY_HERE'
     ```
 
-5.  **Initialize the database (if it doesn't exist):**
+5.  **Initialize the database (THIS FILE SHOULD ALREADY BE IN THE REPO.):**
     This script creates the `discussion.db` file and can be run to add columns if the schema changes.
     ```bash
     python migrate_db.py 
@@ -92,8 +92,3 @@ To run this project locally, please follow these steps.
 
 ---
 
-### Time Log
-
-*   **Start Date & Time:** `[Enter Start Date and Time]`
-*   **Finish Date & Time:** `[Enter Finish Date and Time]`
-*   **Total Time Spent:** `[Enter Total Hours, e.g., 9 hours]`
