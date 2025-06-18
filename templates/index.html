@@ -2,7 +2,13 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Class Discussion</h1>
+    <h1 class="h2">
+        {% if current_topic == 'Home' %}
+            All Posts
+        {% else %}
+            {{ current_topic }} Discussion
+        {% endif %}
+    </h1>
     <!-- THIS IS THE NEW BUTTON -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPostModal">
         + New Post
@@ -56,39 +62,54 @@
 {% endfor %}
 
 <!-- This JavaScript makes the right sidebar appear when you click a post -->
-    <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- Sidebar Logic ---
+        // We select the container element from base.html
+        const mainGridContainer = document.querySelector('.main-grid-container');
+        const rightSidebar = document.getElementById('right-sidebar-details');
+        const closeSidebarButton = document.getElementById('close-sidebar-btn');
+    
+        // --- Sidebar Opening Logic ---
         document.querySelectorAll('.post-card').forEach(card => {
             card.addEventListener('click', function(event) {
-                // Stop if a button was clicked
+                // Stop if a button inside the card was clicked
                 if (event.target.closest('button')) {
                     return;
                 }
+    
+                // --- THIS IS THE ACTION ---
+                // 1. Change the grid layout to make space for the sidebar
+                mainGridContainer.classList.add('sidebar-open');
+                // 2. Make the sidebar itself visible
+                rightSidebar.classList.remove('d-none');
+                // -------------------------
+    
+                // --- This part populates the content ---
                 const detailsTitle = document.getElementById('details-title');
                 const detailsQuestion = document.getElementById('details-question');
                 const detailsAnswer = document.getElementById('details-answer');
     
-                detailsTitle.innerText = this.dataset.title;
-                detailsQuestion.innerText = this.dataset.fullQuestion;
-
-                // 1. Convert the raw Markdown 'answer' string to an HTML string
-                const dirtyHtml = marked.parse(this.dataset.fullAnswer);
-
-                // 2. Sanitize the HTML string to prevent XSS attacks
+                const title = this.dataset.title;
+                const question = this.dataset.fullQuestion;
+                const answer = this.dataset.fullAnswer;
+    
+                detailsTitle.innerText = title;
+                detailsQuestion.innerText = question;
+    
+                const dirtyHtml = marked.parse(answer);
                 const cleanHtml = DOMPurify.sanitize(dirtyHtml);
-
-                // 3. Set the sidebar's inner HTML to the clean, formatted HTML
                 detailsAnswer.innerHTML = cleanHtml;
-
-                // 4. Tell highlight.js to find and style any new <code> blocks we just added
-             //   hljs.highlightAll();
-
-                document.getElementById('right-sidebar-details').classList.remove('d-none');
+                hljs.highlightAll();
             });
         });
     
-        // --- Voting Logic ---
+        // --- Sidebar Closing Logic ---
+        closeSidebarButton.addEventListener('click', function() {
+            mainGridContainer.classList.remove('sidebar-open');
+            rightSidebar.classList.add('d-none');
+        });
+    
+        // --- Voting Logic (Unchanged) ---
         document.querySelectorAll('.vote-btn').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.stopPropagation();
@@ -105,14 +126,13 @@
             });
         });
     
-        // --- NEW ADMIN LOGIC ---
+        // --- Admin Logic (Unchanged) ---
         document.querySelectorAll('.admin-btn').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.stopPropagation();
                 const postId = this.dataset.postId;
                 const action = this.dataset.action;
                 const cardElement = this.closest('.post-card');
-    
                 fetch(`/${action}/${postId}`, { method: 'POST' })
                     .then(response => response.json())
                     .then(data => {
@@ -122,7 +142,6 @@
                             } else if (action === 'resolve') {
                                 cardElement.classList.toggle('resolved-card', data.is_resolved);
                             } else if (action === 'delete') {
-                            // Smoothly remove the card from the page without a reload
                                 cardElement.remove();
                             }
                         }

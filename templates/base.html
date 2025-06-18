@@ -21,59 +21,65 @@
     <!-- Marked.js for Markdown to HTML conversion -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
 </head>
-<body class="d-flex" style="min-height: 100vh;">
+<!-- <body class="d-flex" style="min-height: 100vh;"> -->
 
-    <!-- ======================== -->
-    <!--  LEFT NAVIGATION SIDEBAR -->
-    <!-- ======================== -->
-    <nav class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 220px;">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <span class="fs-4">Discussion Board</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="{{ url_for('index') }}" class="nav-link {% if current_topic == 'Home' %}active{% else %}text-white{% endif %}">
-                    Home
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('topic_view', topic_name='General') }}" class="nav-link {% if current_topic == 'General' %}active{% else %}text-white{% endif %}">
-                    General
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('topic_view', topic_name='Lectures') }}" class="nav-link {% if current_topic == 'Lectures' %}active{% else %}text-white{% endif %}">
-                    Lectures
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('topic_view', topic_name='Projects') }}" class="nav-link {% if current_topic == 'Projects' %}active{% else %}text-white{% endif %}">
-                    Projects
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <body style="overflow: hidden;">
 
-    <!-- ======================== -->
-    <!--  MIDDLE CONTENT AREA     -->
-    <!-- ======================== -->
-    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <!-- This is a placeholder that child templates will fill -->
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- ======================== -->
-    <!--  RIGHT DETAILS SIDEBAR   -->
-    <!-- ======================== -->
-    <aside id="right-sidebar-details" class="p-3 bg-white d-none" style="width: 700px; border-left: 1px solid #dee2e6; overflow-y: auto;">
-        <h4 id="details-title">Select a Post</h4><hr>
-        <div><strong>Question:</strong><p id="details-question" class="text-muted" style="white-space: pre-wrap;"></p></div>
-        <hr>
-        <div><strong>AI Answer:</strong><pre><code id="details-answer" class="text-body" style="white-space: pre-wrap;"></code></pre></div>
-    </aside>
-
-    <!-- Bootstrap JS Bundle for any interactive components -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        <div class="main-grid-container">
+        
+            <!-- Column 1: Left Nav (with full content restored) -->
+            <nav class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
+                <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <span class="fs-4">AI Discussion Board</span>
+                </a>
+                <hr>
+                <!-- This is the UL block that was missing -->
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <a href="{{ url_for('index') }}" class="nav-link {% if current_topic == 'Home' %}active{% else %}text-white{% endif %}">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('topic_view', topic_name='General') }}" class="nav-link {% if current_topic == 'General' %}active{% else %}text-white{% endif %}">
+                            General
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('topic_view', topic_name='Lectures') }}" class="nav-link {% if current_topic == 'Lectures' %}active{% else %}text-white{% endif %}">
+                            Lectures
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('topic_view', topic_name='Projects') }}" class="nav-link {% if current_topic == 'Projects' %}active{% else %}text-white{% endif %}">
+                            Projects
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <!-- You can add user info here in the future -->
+            </nav>
+        
+            <!-- Column 2: Middle Content -->
+            <main class="p-4">
+                {% block content %}{% endblock %}
+            </main>
+        
+            <!-- Column 3: Right Sidebar -->
+            <aside id="right-sidebar-details" class="p-3 bg-white d-none">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 id="details-title" class="mb-0">Select a Post</h4>
+                    <button type="button" id="close-sidebar-btn" class="btn-close" aria-label="Close"></button>
+                </div>
+                <hr>
+                <div><strong>Question:</strong><p id="details-question" class="text-muted" style="white-space: pre-wrap;"></p></div>
+                <hr>
+                <div><strong>AI Answer:</strong><div id="details-answer" class="text-body" style="white-space: pre-wrap;"></div></div>
+            </aside>
+        
+        </div> <!-- End of .main-grid-container -->
+        
+        <!-- All script tags are outside and after the grid container -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
 </html>

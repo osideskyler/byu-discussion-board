@@ -1,4 +1,36 @@
+
+/* Main Grid Layout for the entire page */
+.main-grid-container {
+    display: grid;
+    /* THIS IS THE NEW DEFAULT: A two-column layout */
+    grid-template-columns: 280px 1fr;
+    height: 100vh;
+    /* Add a transition for a smooth animation when the grid changes */
+    transition: grid-template-columns 0.3s ease-in-out;
+}
+
+/* Style for the middle and right columns to enable independent scrolling */
+.main-grid-container > main,
+.main-grid-container > aside {
+    height: 100vh;
+    overflow-y: auto; /* Show scrollbar only when needed */
+}
+
+.main-grid-container > main {
+    background-color: #f8f9fa; /* Light gray background for middle column */
+}
+
+.main-grid-container > aside {
+    border-left: 1px solid #dee2e6;
+}
+
+/* This is our existing style for resolved cards */
 .resolved-card {
     border-left: 5px solid #28a745; /* Bootstrap's success green */
-    background-color: #f0fff4; /* A very light green (honeydew) */
+    background-color: #f0fff4;
+}
+
+.main-grid-container.sidebar-open {
+    /* This overrides the default and creates our three-column layout */
+    grid-template-columns: 280px 1fr 500px;
 }
